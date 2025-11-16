@@ -1,4 +1,3 @@
-import { Timestamp } from 'firebase/firestore';
 
 export interface Student {
   id: string;
@@ -27,21 +26,21 @@ export interface Student {
   status: 'registered' | 'active' | 'inactive' | 'completed';
 
   // Metadata
-  createdAt: Timestamp | Date;
-  updatedAt: Timestamp | Date;
+  createdAt: string | Date;
+  updatedAt: string | Date;
   createdBy?: string; // 'system' or admin email
-  deletedAt?: Timestamp | Date | null;
+  deletedAt?: string | Date | null;
 }
 
 export interface Payment {
   id: string;
   studentId: string;
   amount: number;
-  date: Timestamp | Date;
+  date: string | Date;
   method: 'cash' | 'card' | 'bank-transfer' | 'upi' | 'other';
   notes?: string;
   recordedBy: string;
-  createdAt: Timestamp | Date;
+  createdAt: string | Date;
 }
 
 export interface Role {
@@ -49,7 +48,7 @@ export interface Role {
   email: string;
   role: 'admin';
   addedBy: string;
-  createdAt: Timestamp | Date;
+  createdAt: string | Date;
 }
 
 export interface ActivityLog {
@@ -59,7 +58,7 @@ export interface ActivityLog {
   entityId: string;
   performedBy: string;
   details?: Record<string, any>;
-  timestamp: Timestamp | Date;
+  timestamp: string | Date;
 }
 
 export interface Notification {
@@ -69,7 +68,7 @@ export interface Notification {
   message: string;
   studentId?: string;
   read: boolean;
-  createdAt: Timestamp | Date;
+  createdAt: string | Date;
 }
 
 export interface Settings {
@@ -77,7 +76,7 @@ export interface Settings {
   defaultFee: number;
   timingOptions: string[];
   referralSources: string[];
-  updatedAt: Timestamp | Date;
+  updatedAt: string | Date;
   updatedBy: string;
 }
 

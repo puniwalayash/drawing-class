@@ -6,7 +6,7 @@ import { Users, DollarSign, Clock, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { getStudentStats } from '@/lib/firebase/students';
+import { getStudentStats } from '@/lib/supabase/students';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function AdminDashboard() {

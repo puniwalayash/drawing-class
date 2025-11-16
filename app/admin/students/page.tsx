@@ -23,10 +23,9 @@ import {
 } from '@/components/ui/table';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { getStudents, StudentFilters } from '@/lib/firebase/students';
+import { getStudents, StudentFilters } from '@/lib/supabase/students';
 import { exportStudentsToCSV, downloadCSV } from '@/lib/utils/export';
 import { Student } from '@/types';
-import { Timestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 export default function StudentsPage() {
@@ -193,7 +192,7 @@ export default function StudentsPage() {
                     <TableBody>
                       {filteredStudents.map((student, index) => {
                         const balance = student.totalFee - student.amountPaid;
-                        const createdAt = student.createdAt as Timestamp;
+                        const createdAt = new Date(student.createdAt);
 
                         return (
                           <motion.tr
@@ -242,7 +241,7 @@ export default function StudentsPage() {
                               </span>
                             </TableCell>
                             <TableCell className="text-sm text-gray-600">
-                              {createdAt.toDate().toLocaleDateString()}
+                              {createdAt.toLocaleDateString()}
                             </TableCell>
                             <TableCell className="text-right">
                               <div className="flex items-center justify-end gap-2">

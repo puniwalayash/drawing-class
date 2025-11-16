@@ -1,20 +1,25 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Palette, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { signInWithGoogle } from '@/lib/firebase/auth';
+import { signInWithEmailPassword } from '@/lib/supabase/auth';
 import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
   const { user, loading } = useAuthContext();
   const router = useRouter();
   const { toast } = useToast();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
@@ -26,12 +31,15 @@ export default function LoginPage() {
     }
   }, [user, loading, router]);
 
-  const handleGoogleSignIn = async () => {
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
     try {
-      const user = await signInWithGoogle();
+      const user = await signInWithEmailPassword(email, password);
       toast({
         title: 'Success',
-        description: `Welcome ${user.displayName}!`,
+        description: `Welcome back!`,
       });
 
       if (user.isAdmin) {
@@ -45,6 +53,8 @@ export default function LoginPage() {
         description: error.message || 'Failed to sign in',
         variant: 'destructive',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -81,28 +91,66 @@ export default function LoginPage() {
                 Sign in to access your account
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <Button
-                onClick={handleGoogleSignIn}
-                className="w-full h-12 text-lg"
-                size="lg"
-              >
-                <LogIn className="mr-2 w-5 h-5" />
-                Sign in with Google
-              </Button>
+            <CardContent>
+              <form onSubmit={handleSignIn} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={isSubmitting}
+                  />
+                </div>
 
-              <div className="text-center text-sm text-gray-600">
-                <p>
-                  Don't have an account?{' '}
-                  <Link href="/register" className="text-blue-600 hover:underline font-medium">
-                    Register your child
-                  </Link>
-                </p>
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    disabled={isSubmitting}
+                  />
+                </div>
 
-              <div className="pt-4 border-t border-gray-200 text-center text-xs text-gray-500">
-                <p>Admins: Sign in with your authorized Google account</p>
-              </div>
+                <Button
+                  type="submit"
+                  className="w-full h-12 text-lg"
+                  size="lg"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
+                      Signing in...
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="mr-2 w-5 h-5" />
+                      Sign In
+                    </>
+                  )}
+                </Button>
+
+                <div className="text-center text-sm text-gray-600">
+                  <p>
+                    Don't have an account?{' '}
+                    <Link href="/register" className="text-blue-600 hover:underline font-medium">
+                      Register your child
+                    </Link>
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-gray-200 text-center text-xs text-gray-500">
+                  <p>Admins: Sign in with your authorized credentials</p>
+                </div>
+              </form>
             </CardContent>
           </Card>
         </motion.div>

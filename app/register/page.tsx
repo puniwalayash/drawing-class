@@ -15,8 +15,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { registrationSchema } from '@/lib/validations/registration';
-import { createStudent } from '@/lib/firebase/students';
-import { createNotification } from '@/lib/firebase/notifications';
+import { createStudent } from '@/lib/supabase/students';
+import { createNotification } from '@/lib/supabase/notifications';
 import { RegistrationFormData } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 

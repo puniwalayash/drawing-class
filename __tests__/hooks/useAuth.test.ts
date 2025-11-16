@@ -13,10 +13,10 @@
 
 import { renderHook, waitFor } from '@testing-library/react';
 import { useAuth } from '@/hooks/useAuth';
-import { onAuthChange } from '@/lib/firebase/auth';
+import { onAuthChange } from '@/lib/supabase/auth';
 
-// Mock Firebase auth
-jest.mock('@/lib/firebase/auth', () => ({
+// Mock Supabase auth
+jest.mock('@/lib/supabase/auth', () => ({
   onAuthChange: jest.fn(),
 }));
 

@@ -8,11 +8,9 @@ import { Palette, User, Calendar, DollarSign, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { signOut } from '@/lib/firebase/auth';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
+import { signOut } from '@/lib/supabase/auth';
+import { supabase } from '@/lib/supabase/config';
 import { Student } from '@/types';
-import { Timestamp } from 'firebase/firestore';
 
 export default function MyRegistrationsPage() {
   const { user, loading } = useAuthContext();
@@ -36,17 +34,41 @@ export default function MyRegistrationsPage() {
     if (!user?.email) return;
 
     try {
-      const q = query(
-        collection(db, 'students'),
-        where('parentEmail', '==', user.email),
-        where('deletedAt', '==', null)
-      );
-      const querySnapshot = await getDocs(q);
-      const data: Student[] = [];
-      querySnapshot.forEach((doc) => {
-        data.push({ id: doc.id, ...doc.data() } as Student);
-      });
-      setStudents(data);
+      const { data, error } = await supabase
+        .from('students')
+        .select('*')
+        .eq('parent_email', user.email)
+        .is('deleted_at', null);
+
+      if (error) throw error;
+
+      const students: Student[] = (data || []).map((item: any) => ({
+        id: item.id,
+        firstName: item.first_name,
+        lastName: item.last_name,
+        dateOfBirth: item.date_of_birth,
+        age: item.age,
+        grade: item.grade,
+        gender: item.gender,
+        sampleArtworkUrl: item.sample_artwork_url,
+        medicalNotes: item.medical_notes,
+        parentName: item.parent_name,
+        parentEmail: item.parent_email,
+        parentPhone: item.parent_phone,
+        address: item.address,
+        preferredTiming: item.preferred_timing,
+        referralSource: item.referral_source,
+        totalFee: item.total_fee,
+        feeType: item.fee_type,
+        amountPaid: item.amount_paid,
+        status: item.status,
+        createdAt: item.created_at,
+        updatedAt: item.updated_at,
+        createdBy: item.created_by,
+        deletedAt: item.deleted_at,
+      }));
+
+      setStudents(students);
     } catch (error) {
       console.error('Failed to load students:', error);
     } finally {
@@ -130,7 +152,7 @@ export default function MyRegistrationsPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {students.map((student, index) => {
               const balance = student.totalFee - student.amountPaid;
-              const createdAt = student.createdAt as Timestamp;
+              const createdAt = new Date(student.createdAt);
 
               return (
                 <motion.div
@@ -170,7 +192,7 @@ export default function MyRegistrationsPage() {
                           {student.status}
                         </div>
                         <p className="text-xs text-gray-500 mt-2">
-                          Registered on {createdAt.toDate().toLocaleDateString()}
+                          Registered on {createdAt.toLocaleDateString()}
                         </p>
                       </div>
                     </CardContent>

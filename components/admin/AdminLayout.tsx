@@ -17,7 +17,7 @@ import {
   UserCog,
 } from 'lucide-react';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { signOut } from '@/lib/firebase/auth';
+import { signOut } from '@/lib/supabase/auth';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 

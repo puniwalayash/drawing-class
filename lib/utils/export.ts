@@ -1,5 +1,4 @@
 import { Student } from '@/types';
-import { Timestamp } from 'firebase/firestore';
 
 export const exportStudentsToCSV = (students: Student[]): string => {
   const headers = [
@@ -25,7 +24,7 @@ export const exportStudentsToCSV = (students: Student[]): string => {
   ];
 
   const rows = students.map((student) => {
-    const createdAt = student.createdAt as Timestamp;
+    const createdAt = new Date(student.createdAt);
     const balance = student.totalFee - student.amountPaid;
 
     return [
@@ -46,7 +45,7 @@ export const exportStudentsToCSV = (students: Student[]): string => {
       balance,
       student.feeType,
       student.status,
-      createdAt.toDate().toLocaleDateString(),
+      createdAt.toLocaleDateString(),
       student.medicalNotes || 'N/A',
     ];
   });
